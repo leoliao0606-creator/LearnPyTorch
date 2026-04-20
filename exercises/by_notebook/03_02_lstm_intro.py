@@ -10,7 +10,6 @@ import torch
 import torch.nn as nn
 
 
-# Exercise 1 / 练习 1 — Understand LSTM output shapes
 # Create an LSTM with input_size=8, hidden_size=16, batch_first=True.
 # Pass a batch of 4 sequences, each 10 tokens long.
 # Print the shapes of: output, h_n, c_n.
@@ -26,7 +25,6 @@ import torch.nn as nn
 # print(output.shape, h_n.shape, c_n.shape)
 
 
-# Exercise 2 / 练习 2 — Extract the last hidden state
 # Write a function last_hidden(lstm, x) that:
 #   1. runs x through an LSTM
 #   2. returns the last-layer hidden state of shape (batch, hidden_size)
@@ -41,7 +39,6 @@ import torch.nn as nn
 # print(last_hidden(lstm, torch.randn(4, 10, 8)).shape)  # (4, 16)
 
 
-# Exercise 3 / 练习 3 — LSTMClassifier
 # Build an LSTMClassifier module:
 #   - __init__(vocab_size, embed_dim, hidden_size, num_classes)
 #   - Embedding layer + LSTM + Linear head
@@ -63,7 +60,6 @@ import torch.nn as nn
 # print(model(token_ids).shape)  # torch.Size([8, 2])
 
 
-# Exercise 4 / 练习 4 — Minimal training loop
 # Using your LSTMClassifier, train it for 20 steps on random data.
 # Print loss every 5 steps. Loss should decrease (or at least not blow up).
 
@@ -84,7 +80,6 @@ import torch.nn as nn
 #         print(f"step {step+1}: loss={loss.item():.4f}")
 
 
-# Exercise 5 (debugging) / 调试练习
 # The model below runs without error but always outputs the same predictions
 # regardless of input. Why? What would you fix?
 
@@ -103,7 +98,6 @@ class BrokenLSTM(nn.Module):
 # Hint: check what happens to output shape when batch_first=False.
 
 
-# Reflection / 总结
 # 1. What is the difference between output and h_n in LSTM?
 # 2. Why do we take h_n[-1] instead of h_n[0] for a multi-layer LSTM?
 # 3. What happens to the hidden state when we call lstm(x) without passing h_0?

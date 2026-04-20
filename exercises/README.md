@@ -1,19 +1,25 @@
-# Exercises / 独立练习
+# Exercises
 
-这个目录用于把 notebook 内的练习抽出来，变成**脱离讲解也能单独完成**的练习。  
-This directory extracts notebook exercises into standalone practice files that can be completed without the teaching flow.
+This directory extracts notebook exercises into standalone practice files so you can work on them without following the full teaching flow.
 
-目录约定：
+## Layout
 
-- `by_notebook/`：未完成版 / practice version
-- `solutions/`：参考答案版 / reference solution
+- `by_notebook/`: practice versions grouped by notebook id
+- `solutions/`: reference solutions for the extracted exercises
 
-当前这一轮先抽取一批高价值练习，建立模式：
+## Current Coverage
+
+The current set focuses on high-value drills that reinforce the core path:
 
 - `01_03_autograd`
+- `01_05_building_models_with_nn_module`
 - `01_07_training_loop`
+- `02_02_cnn_basics`
+- `03_02_lstm_intro`
 - `04_02_debugging_playbook`
 - `05_01_capstone_tabular_classification`
 - `05_02_capstone_text_classification`
 
-后续如果要彻底补齐，可以继续按同样命名方式把其余 notebook 练习逐步抽出来。
+## Expansion Rule
+
+If you want full coverage later, keep the same naming convention and continue extracting exercises from the remaining notebooks.

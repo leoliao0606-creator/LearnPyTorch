@@ -10,7 +10,6 @@ import torch
 import torch.nn as nn
 
 
-# Exercise 1 / 练习 1 — Shape tracing (no code needed)
 # A grayscale image has shape (1, 28, 28).
 # After each operation below, write the output shape as a comment.
 #
@@ -28,7 +27,6 @@ x = torch.randn(1, 1, 28, 28)
 # TODO: apply each op and print shape after each step
 
 
-# Exercise 2 / 练习 2 — Build a CNN block
 # Build a ConvBlock class using nn.Sequential that applies:
 #   Conv2d(in_channels, out_channels, kernel_size=3, padding=1)
 #   BatchNorm2d(out_channels)
@@ -48,7 +46,6 @@ x = torch.randn(1, 1, 28, 28)
 # print(block(torch.randn(2, 1, 28, 28)).shape)
 
 
-# Exercise 3 / 练习 3 — Count Conv2d parameters
 # A Conv2d(3, 64, kernel_size=3) layer — how many trainable parameters?
 # Formula: C_out * (C_in * K * K + 1)   (the +1 is for bias)
 #
@@ -61,7 +58,6 @@ x = torch.randn(1, 1, 28, 28)
 # print(manual_count, actual_count)   # should match
 
 
-# Exercise 4 / 练习 4 — End-to-end small CNN
 # Build a SmallCNN for 10-class classification of (1, 28, 28) images:
 #   Conv2d(1, 8, 3, padding=1) → ReLU → MaxPool2d(2)
 #   Conv2d(8, 16, 3, padding=1) → ReLU → AdaptiveAvgPool2d(1)
@@ -77,7 +73,6 @@ x = torch.randn(1, 1, 28, 28)
 # print(model(torch.randn(4, 1, 28, 28)).shape)  # torch.Size([4, 10])
 
 
-# Exercise 5 (debugging) / 调试练习
 # The forward() below raises an error. Find the cause without running it first,
 # then fix it.
 
@@ -95,7 +90,6 @@ class BrokenCNN(nn.Module):
 # TODO: explain what's wrong, then build FixedCNN that works on (2, 1, 10, 10)
 
 
-# Reflection / 总结
 # 1. Why does padding=1 with kernel_size=3 preserve spatial size?
 # 2. What does AdaptiveAvgPool2d(1) do, and why is it useful?
 # 3. When would you prefer MaxPool over AvgPool?

@@ -1,16 +1,15 @@
 # Capstone Text Classification
 
-Binary sentiment classification (positive / negative) on a synthetic movie-review dataset.
-Mirrors the structure of `../capstone_tabular/`.
+This mini-project compares several text-classification baselines on a small synthetic movie-review dataset.
 
-## Models compared
+## Models Compared
 
 | Model | Type | Notes |
-|-------|------|-------|
-| Unigram-LR | sklearn | Logistic regression on bag-of-words |
-| Bigram-LR | sklearn | Logistic regression on bigrams |
-| LSTM-Small | PyTorch (src.models) | embed=16, hidden=32 |
-| LSTM-Medium | PyTorch (src.models) | embed=32, hidden=64 |
+| --- | --- | --- |
+| Unigram-LR | sklearn | logistic regression on bag-of-words |
+| Bigram-LR | sklearn | logistic regression on bigrams |
+| LSTM-Small | PyTorch (`src.models`) | `embed_dim=16`, `hidden_dim=32` |
+| LSTM-Medium | PyTorch (`src.models`) | `embed_dim=32`, `hidden_dim=64` |
 
 ## Run
 
@@ -20,11 +19,11 @@ python train.py
 ```
 
 Results are written to `artifacts/`:
-- `config_used.json` — exact config for this run
-- `results.json` — sorted leaderboard with confusion matrices
-- `histories.json` — per-epoch train/val metrics for LSTM models
 
-## Edit experiments
+- `config_used.json`: exact config used for the run
+- `results.json`: sorted leaderboard with confusion matrices
+- `histories.json`: per-epoch train and validation metrics for LSTM models
 
-Change `config.json` to add new LSTM variants or tweak hyperparameters,
-then re-run `train.py`. Results are always overwritten in `artifacts/`.
+## Edit Experiments
+
+Change `config.json` to add new LSTM variants or tweak hyperparameters, then run `train.py` again.

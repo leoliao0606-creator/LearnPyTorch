@@ -10,7 +10,6 @@ import torch
 import torch.nn as nn
 
 
-# Exercise 1 / 练习 1
 # Define a class TwoLayerMLP that:
 #   - accepts in_dim, hidden_dim, out_dim in __init__
 #   - has two Linear layers with ReLU in between
@@ -32,7 +31,6 @@ import torch.nn as nn
 # print(out.shape)
 
 
-# Exercise 2 / 练习 2
 # Count trainable parameters.
 # Write a function count_params(model) that returns the total number
 # of trainable parameters in any nn.Module.
@@ -49,7 +47,6 @@ import torch.nn as nn
 # print(count_params(model))  # should print 67
 
 
-# Exercise 3 / 练习 3
 # Demonstrate that model.train() vs model.eval() affects Dropout.
 #
 # Create DropoutMLP with Dropout(p=0.5).
@@ -69,7 +66,6 @@ import torch.nn as nn
 # print([model_d(x).tolist() for _ in range(3)])
 
 
-# Exercise 4 (debugging) / 调试练习
 # The model below raises a shape error. Find and fix it.
 # Expected behavior: input (8, 16) → output (8, 4)
 
@@ -88,7 +84,6 @@ class BuggyModel(nn.Module):
 # print(fixed(torch.randn(8, 16)).shape)  # torch.Size([8, 4])
 
 
-# Reflection / 总结
 # Answer in comments:
 # 1. What does super().__init__() do and why is it required?
 # 2. Why can't nn.Sequential handle a skip/residual connection?
