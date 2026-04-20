@@ -1,24 +1,24 @@
-"""Standalone exercises for 01_05_building_models_with_nn_module.ipynb.
+"""01_05_building_models_with_nn_module.ipynb 对应的独立练习。
 
-Rules:
-1. Do not open the solution file first.
-2. Fill the TODO sections by yourself.
-3. After finishing, compare with the solution.
+规则：
+1. 不要先打开参考答案。
+2. 先自己完成 TODO。
+3. 做完后再和答案对照。
 """
 
 import torch
 import torch.nn as nn
 
 
-# Exercise 1 / 练习 1
-# Define a class TwoLayerMLP that:
-#   - accepts in_dim, hidden_dim, out_dim in __init__
-#   - has two Linear layers with ReLU in between
-#   - implements forward(x) correctly
+# 练习 1
+# 定义一个 TwoLayerMLP 类，要求：
+#   - 在 __init__ 中接收 in_dim、hidden_dim、out_dim
+#   - 包含两层 Linear，中间加 ReLU
+#   - 正确实现 forward(x)
 #
-# Instantiate it with in_dim=4, hidden_dim=8, out_dim=3.
-# Run a forward pass on torch.randn(5, 4) and print the output shape.
-# Expected: torch.Size([5, 3])
+# 用 in_dim=4、hidden_dim=8、out_dim=3 实例化。
+# 对 torch.randn(5, 4) 跑一次 forward，并打印输出 shape。
+# 期望输出：torch.Size([5, 3])
 
 # TODO:
 # class TwoLayerMLP(nn.Module):
@@ -32,30 +32,30 @@ import torch.nn as nn
 # print(out.shape)
 
 
-# Exercise 2 / 练习 2
-# Count trainable parameters.
-# Write a function count_params(model) that returns the total number
-# of trainable parameters in any nn.Module.
+# 练习 2
+# 统计可训练参数量。
+# 写一个 count_params(model) 函数，返回任意 nn.Module 的
+# 可训练参数总数。
 #
-# Use it on the TwoLayerMLP above and verify manually:
-#   Layer 1: 4*8 + 8 = 40
-#   Layer 2: 8*3 + 3 = 27
-#   Total: 67
+# 在上面的 TwoLayerMLP 上使用它，并手工核对：
+#   第 1 层：4*8 + 8 = 40
+#   第 2 层：8*3 + 3 = 27
+#   总计：67
 
 # TODO:
 # def count_params(model):
 #     ...
 #
-# print(count_params(model))  # should print 67
+# print(count_params(model))  # 应该输出 67
 
 
-# Exercise 3 / 练习 3
-# Demonstrate that model.train() vs model.eval() affects Dropout.
+# 练习 3
+# 展示 model.train() 和 model.eval() 对 Dropout 的影响。
 #
-# Create DropoutMLP with Dropout(p=0.5).
-# Run the same input (torch.ones(1, 4)) through the model 3 times
-# in train mode and 3 times in eval mode.
-# Observe: outputs should vary in train, be identical in eval.
+# 创建带有 Dropout(p=0.5) 的 DropoutMLP。
+# 用同一个输入 torch.ones(1, 4)，
+# 在 train 模式下跑 3 次，在 eval 模式下也跑 3 次。
+# 观察：train 下输出应该变化，eval 下输出应该一致。
 
 # TODO:
 # class DropoutMLP(nn.Module):
@@ -69,9 +69,9 @@ import torch.nn as nn
 # print([model_d(x).tolist() for _ in range(3)])
 
 
-# Exercise 4 (debugging) / 调试练习
-# The model below raises a shape error. Find and fix it.
-# Expected behavior: input (8, 16) → output (8, 4)
+# 调试练习
+# 下面这个模型会触发 shape 错误。找出并修复它。
+# 期望行为：输入 (8, 16) -> 输出 (8, 4)
 
 class BuggyModel(nn.Module):
     def __init__(self):
@@ -83,13 +83,13 @@ class BuggyModel(nn.Module):
         x = torch.relu(self.fc1(x))
         return self.fc2(x)
 
-# TODO: define FixedModel (copy BuggyModel and fix the bug), then verify:
+# TODO: 定义 FixedModel（复制 BuggyModel 并修好 bug），然后验证：
 # fixed = FixedModel()
 # print(fixed(torch.randn(8, 16)).shape)  # torch.Size([8, 4])
 
 
-# Reflection / 总结
-# Answer in comments:
-# 1. What does super().__init__() do and why is it required?
-# 2. Why can't nn.Sequential handle a skip/residual connection?
-# 3. What is the difference between model.parameters() and model.state_dict()?
+# 总结
+# 用注释回答：
+# 1. super().__init__() 做了什么，为什么必须调用？
+# 2. 为什么 nn.Sequential 不能直接处理 skip / residual connection？
+# 3. model.parameters() 和 model.state_dict() 的区别是什么？

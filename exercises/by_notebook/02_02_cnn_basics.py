@@ -1,18 +1,18 @@
-"""Standalone exercises for 02_02_cnn_basics.ipynb.
+"""02_02_cnn_basics.ipynb 对应的独立练习。
 
-Rules:
-1. Do not open the solution file first.
-2. Fill the TODO sections by yourself.
-3. After finishing, compare with the solution.
+规则：
+1. 不要先打开参考答案。
+2. 先自己完成 TODO。
+3. 做完后再和答案对照。
 """
 
 import torch
 import torch.nn as nn
 
 
-# Exercise 1 / 练习 1 — Shape tracing (no code needed)
-# A grayscale image has shape (1, 28, 28).
-# After each operation below, write the output shape as a comment.
+# 练习 1 — Shape 追踪（可以先不写代码）
+# 一张灰度图的 shape 是 (1, 28, 28)。
+# 请在下面每一步操作后面，先写出输出 shape。
 #
 # op1 = nn.Conv2d(1, 16, kernel_size=3, padding=0)   # TODO: → ?
 # op2 = nn.MaxPool2d(2)                               # TODO: → ?
@@ -20,22 +20,22 @@ import torch.nn as nn
 # op4 = nn.AdaptiveAvgPool2d(1)                       # TODO: → ?
 # flatten                                             # TODO: → ?
 #
-# Formula: H_out = (H_in + 2*padding - kernel_size) // stride + 1
+# 公式：H_out = (H_in + 2*padding - kernel_size) // stride + 1
 #
-# After writing your answers, verify with code:
+# 写完之后，再用代码验证：
 
 x = torch.randn(1, 1, 28, 28)
-# TODO: apply each op and print shape after each step
+# TODO: 依次应用每个操作，并打印每一步的 shape
 
 
-# Exercise 2 / 练习 2 — Build a CNN block
-# Build a ConvBlock class using nn.Sequential that applies:
+# 练习 2 — 搭一个 CNN block
+# 用 nn.Sequential 构建一个 ConvBlock，包含：
 #   Conv2d(in_channels, out_channels, kernel_size=3, padding=1)
 #   BatchNorm2d(out_channels)
 #   ReLU
 #
-# Instantiate with in_channels=1, out_channels=16.
-# Verify: input (2, 1, 28, 28) → output (2, 16, 28, 28)   # same spatial size
+# 用 in_channels=1、out_channels=16 实例化。
+# 验证：输入 (2, 1, 28, 28) -> 输出 (2, 16, 28, 28)   # 空间尺寸保持不变
 
 # TODO:
 # class ConvBlock(nn.Module):
@@ -48,26 +48,26 @@ x = torch.randn(1, 1, 28, 28)
 # print(block(torch.randn(2, 1, 28, 28)).shape)
 
 
-# Exercise 3 / 练习 3 — Count Conv2d parameters
-# A Conv2d(3, 64, kernel_size=3) layer — how many trainable parameters?
-# Formula: C_out * (C_in * K * K + 1)   (the +1 is for bias)
+# 练习 3 — 统计 Conv2d 参数量
+# 一个 Conv2d(3, 64, kernel_size=3) 层有多少可训练参数？
+# 公式：C_out * (C_in * K * K + 1)   （+1 表示 bias）
 #
-# Write your manual calculation as a comment, then verify:
+# 先把你的手算过程写成注释，再用代码验证：
 
 # TODO:
-# manual_count = ...   # your calculation
+# manual_count = ...   # 你的手算结果
 # layer = nn.Conv2d(3, 64, kernel_size=3)
 # actual_count = sum(p.numel() for p in layer.parameters())
-# print(manual_count, actual_count)   # should match
+# print(manual_count, actual_count)   # 两者应该一致
 
 
-# Exercise 4 / 练习 4 — End-to-end small CNN
-# Build a SmallCNN for 10-class classification of (1, 28, 28) images:
+# 练习 4 — 端到端小型 CNN
+# 为 (1, 28, 28) 图像的 10 分类任务构建一个 SmallCNN：
 #   Conv2d(1, 8, 3, padding=1) → ReLU → MaxPool2d(2)
 #   Conv2d(8, 16, 3, padding=1) → ReLU → AdaptiveAvgPool2d(1)
 #   flatten → Linear(16, 10)
 #
-# Verify: input (4, 1, 28, 28) → output (4, 10)
+# 验证：输入 (4, 1, 28, 28) -> 输出 (4, 10)
 
 # TODO:
 # class SmallCNN(nn.Module):
@@ -77,9 +77,8 @@ x = torch.randn(1, 1, 28, 28)
 # print(model(torch.randn(4, 1, 28, 28)).shape)  # torch.Size([4, 10])
 
 
-# Exercise 5 (debugging) / 调试练习
-# The forward() below raises an error. Find the cause without running it first,
-# then fix it.
+# 调试练习
+# 下面这个 forward() 会报错。先不要运行，先找原因，再修复。
 
 class BrokenCNN(nn.Module):
     def __init__(self):
@@ -92,10 +91,10 @@ class BrokenCNN(nn.Module):
         x = x.flatten(1)
         return self.fc(x)
 
-# TODO: explain what's wrong, then build FixedCNN that works on (2, 1, 10, 10)
+# TODO: 解释哪里错了，然后构建一个能处理 (2, 1, 10, 10) 输入的 FixedCNN
 
 
-# Reflection / 总结
-# 1. Why does padding=1 with kernel_size=3 preserve spatial size?
-# 2. What does AdaptiveAvgPool2d(1) do, and why is it useful?
-# 3. When would you prefer MaxPool over AvgPool?
+# 总结
+# 1. 为什么 kernel_size=3 且 padding=1 会保持空间尺寸不变？
+# 2. AdaptiveAvgPool2d(1) 做了什么，为什么有用？
+# 3. 什么情况下你会更偏向 MaxPool 而不是 AvgPool？

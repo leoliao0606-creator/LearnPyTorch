@@ -1,50 +1,49 @@
-# Error Log Template / 报错记录模板
+# 错误日志模板
 
-## 基本信息 / Basics
+## 基本信息
 
-- 日期 / Date:
-- 阶段 / Phase:
-- 对应 notebook / Notebook:
-- 场景 / Context:
+- 日期:
+- 阶段:
+- Notebook:
+- 场景:
 
-## 报错原文 / Original Error
+## 原始报错
 
 ```text
-粘贴完整报错 / paste the full error here
 ```
 
-## 最小复现 / Minimal Reproduction
+## 最小复现
 
 ```python
 # 只保留最小可复现代码
 ```
 
-## 我当时的判断 / My First Guess
+## 我当时的第一判断
 
-- 我以为问题在：
+- 我一开始以为问题在:
 
-## 真正原因 / Root Cause
+## 真正原因
 
-- shape 问题 / shape issue
-- dtype 问题 / dtype issue
-- device 问题 / device issue
-- 数据问题 / data issue
-- 训练逻辑问题 / training logic issue
-- 其他 / other
+- shape 问题
+- dtype 问题
+- device 问题
+- 数据问题
+- 训练逻辑问题
+- 其他
 
-具体说明：
+具体说明:
 
-## 最终修复 / Final Fix
+## 最终修复
 
 ```python
 # 贴关键修复代码
 ```
 
-## 我下次应该先检查什么 / What I Should Check First Next Time
+## 下次先检查什么
 
 - 
 
-## 是否值得加入速查表 / Should This Go Into a Cheat Sheet
+## 要不要记进速查表
 
-- 是 / Yes
-- 否 / No
+- 是
+- 否

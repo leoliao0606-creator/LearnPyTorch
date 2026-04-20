@@ -1,23 +1,23 @@
-"""Standalone exercises for 03_02_lstm_intro.ipynb.
+"""03_02_lstm_intro.ipynb 对应的独立练习。
 
-Rules:
-1. Do not open the solution file first.
-2. Fill the TODO sections by yourself.
-3. After finishing, compare with the solution.
+规则：
+1. 不要先打开参考答案。
+2. 先自己完成 TODO。
+3. 做完后再和答案对照。
 """
 
 import torch
 import torch.nn as nn
 
 
-# Exercise 1 / 练习 1 — Understand LSTM output shapes
-# Create an LSTM with input_size=8, hidden_size=16, batch_first=True.
-# Pass a batch of 4 sequences, each 10 tokens long.
-# Print the shapes of: output, h_n, c_n.
-# Then answer in comments:
-#   - What does output[:, -1, :] give you?
-#   - What does h_n[-1] give you?
-#   - Are they the same?
+# 练习 1 — 理解 LSTM 的输出 shape
+# 创建一个 input_size=8、hidden_size=16、batch_first=True 的 LSTM。
+# 输入一个 batch，其中有 4 条序列，每条长度是 10。
+# 打印 output、h_n、c_n 的 shape。
+# 然后在注释里回答：
+#   - output[:, -1, :] 表示什么？
+#   - h_n[-1] 表示什么？
+#   - 它们一样吗？
 
 # TODO:
 # lstm = nn.LSTM(input_size=8, hidden_size=16, batch_first=True)
@@ -26,12 +26,12 @@ import torch.nn as nn
 # print(output.shape, h_n.shape, c_n.shape)
 
 
-# Exercise 2 / 练习 2 — Extract the last hidden state
-# Write a function last_hidden(lstm, x) that:
-#   1. runs x through an LSTM
-#   2. returns the last-layer hidden state of shape (batch, hidden_size)
+# 练习 2 — 取最后一层 hidden state
+# 写一个 last_hidden(lstm, x) 函数，要求：
+#   1. 让 x 通过一个 LSTM
+#   2. 返回最后一层的 hidden state，shape 为 (batch, hidden_size)
 #
-# Verify: input (4, 10, 8) → output (4, 16)
+# 验证：输入 (4, 10, 8) -> 输出 (4, 16)
 
 # TODO:
 # def last_hidden(lstm, x):
@@ -41,15 +41,15 @@ import torch.nn as nn
 # print(last_hidden(lstm, torch.randn(4, 10, 8)).shape)  # (4, 16)
 
 
-# Exercise 3 / 练习 3 — LSTMClassifier
-# Build an LSTMClassifier module:
+# 练习 3 — LSTMClassifier
+# 构建一个 LSTMClassifier 模块：
 #   - __init__(vocab_size, embed_dim, hidden_size, num_classes)
-#   - Embedding layer + LSTM + Linear head
-#   - forward takes integer token ids of shape (batch, seq_len)
-#   - returns logits of shape (batch, num_classes)
+#   - 包含 Embedding 层 + LSTM + Linear head
+#   - forward 接收 shape 为 (batch, seq_len) 的整数 token id
+#   - 返回 shape 为 (batch, num_classes) 的 logits
 #
-# Verify with vocab_size=100, embed_dim=16, hidden_size=32, num_classes=2:
-#   input (8, 20) → output (8, 2)
+# 用 vocab_size=100、embed_dim=16、hidden_size=32、num_classes=2 验证：
+#   输入 (8, 20) -> 输出 (8, 2)
 
 # TODO:
 # class LSTMClassifier(nn.Module):
@@ -63,9 +63,9 @@ import torch.nn as nn
 # print(model(token_ids).shape)  # torch.Size([8, 2])
 
 
-# Exercise 4 / 练习 4 — Minimal training loop
-# Using your LSTMClassifier, train it for 20 steps on random data.
-# Print loss every 5 steps. Loss should decrease (or at least not blow up).
+# 练习 4 — 最小训练循环
+# 用你自己的 LSTMClassifier 在随机数据上训练 20 步。
+# 每 5 步打印一次 loss。loss 应该下降，至少不要爆炸。
 
 # TODO:
 # model = LSTMClassifier(100, 16, 32, 2)
@@ -84,9 +84,9 @@ import torch.nn as nn
 #         print(f"step {step+1}: loss={loss.item():.4f}")
 
 
-# Exercise 5 (debugging) / 调试练习
-# The model below runs without error but always outputs the same predictions
-# regardless of input. Why? What would you fix?
+# 调试练习
+# 下面这个模型虽然能运行，但不管输入是什么，都会给出几乎一样的预测。
+# 为什么？你会怎么修？
 
 class BrokenLSTM(nn.Module):
     def __init__(self):
@@ -95,15 +95,15 @@ class BrokenLSTM(nn.Module):
         self.fc   = nn.Linear(32, 2)
 
     def forward(self, x):
-        # x is assumed to be (batch, seq_len, embed_dim)
+        # 假设 x 的 shape 是 (batch, seq_len, embed_dim)
         output, _ = self.lstm(x)
         return self.fc(output[:, -1, :])
 
-# TODO: explain the bug. Does it crash? Does it silently give wrong results?
-# Hint: check what happens to output shape when batch_first=False.
+# TODO: 解释这个 bug。它会直接报错，还是会静默地产生错误结果？
+# 提示：看一下 batch_first=False 时 output 的 shape 会变成什么。
 
 
-# Reflection / 总结
-# 1. What is the difference between output and h_n in LSTM?
-# 2. Why do we take h_n[-1] instead of h_n[0] for a multi-layer LSTM?
-# 3. What happens to the hidden state when we call lstm(x) without passing h_0?
+# 总结
+# 1. LSTM 里的 output 和 h_n 有什么区别？
+# 2. 多层 LSTM 为什么通常取 h_n[-1] 而不是 h_n[0]？
+# 3. 调用 lstm(x) 时如果不传 h_0，hidden state 会怎样？

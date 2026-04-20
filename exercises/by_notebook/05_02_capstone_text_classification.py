@@ -1,23 +1,23 @@
-"""Standalone exercises for 05_02_capstone_text_classification.ipynb."""
+"""05_02_capstone_text_classification.ipynb 对应的独立练习。"""
 
-# Exercise 1 / 练习 1
-# Why can a unigram bag-of-words model struggle with:
+# 练习 1
+# 为什么 unigram bag-of-words 模型会难以处理下面两句：
 # - "good movie"
 # - "not good movie"
-# even though both contain the word "good"?
+# 明明它们都包含单词 "good"？
 
 
-# Exercise 2 / 练习 2
-# Suppose the results are:
+# 练习 2
+# 假设结果如下：
 # - Unigram-LR: 0.75
 # - Bigram-LR: 1.00
 # - LSTM: 1.00
 #
-# What does this suggest about the task?
+# 这说明这个任务具有什么特点？
 
 
-# Exercise 3 / 练习 3
-# Write down one advantage and one tradeoff for each:
+# 练习 3
+# 分别写出下面每种方法的一个优点和一个代价：
 # - unigram
 # - bigram
 # - LSTM

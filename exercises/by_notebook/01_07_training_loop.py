@@ -1,14 +1,14 @@
-"""Standalone exercises for 01_07_training_loop.ipynb."""
+"""01_07_training_loop.ipynb 对应的独立练习。"""
 
 import torch
 import torch.nn as nn
 
 
-# Exercise 1 / 练习 1
-# Complete one training step:
-# 1. run the model
-# 2. compute the loss
-# 3. zero gradients
+# 练习 1
+# 补全一个训练 step：
+# 1. 跑模型
+# 2. 计算 loss
+# 3. 清零梯度
 # 4. backward
 # 5. optimizer step
 
@@ -27,17 +27,17 @@ y = torch.tensor([0, 1, 0, 1, 0, 1, 0, 1], dtype=torch.long)
 # print("loss =", float(loss))
 
 
-# Exercise 2 / 练习 2
-# Explain the difference between model.train() and model.eval().
+# 练习 2
+# 解释 model.train() 和 model.eval() 的区别。
 
-# Write your answer here:
+# 在这里写你的答案：
 # -
 # -
 
 
-# Exercise 3 / 练习 3
-# Write a small function called batch_accuracy(logits, targets)
-# that returns the batch accuracy as a float.
+# 练习 3
+# 写一个叫 batch_accuracy(logits, targets) 的小函数，
+# 返回当前 batch 的准确率（float）。
 
 # TODO:
 # def batch_accuracy(logits, targets):
