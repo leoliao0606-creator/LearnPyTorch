@@ -1,0 +1,15 @@
+"""Reference solution for 05_02_capstone_text_classification.py."""
+
+print("exercise 1:")
+print("- A unigram model sees individual words, not their local order.")
+print("- It knows that 'not' appears and that 'good' appears, but not necessarily that they form 'not good'.")
+print()
+print("exercise 2:")
+print("- The task is strongly driven by short local phrase patterns.")
+print("- A bigram model is already enough to capture most of the useful signal.")
+print("- The LSTM is not automatically better just because it is more complex.")
+print()
+print("exercise 3:")
+print("- unigram: simple and fast, but weak on order")
+print("- bigram: stronger local phrase modeling, but feature space grows")
+print("- LSTM: models sequence order directly, but training is slower and more complex")

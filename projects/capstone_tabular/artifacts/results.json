@@ -1,0 +1,147 @@
+[
+  {
+    "model": "LogisticRegression",
+    "family": "baseline",
+    "val_acc": 0.978022,
+    "test_acc": 0.982456,
+    "confusion_matrix": [
+      [
+        41,
+        1
+      ],
+      [
+        1,
+        71
+      ]
+    ],
+    "classification_report": {
+      "malignant": {
+        "precision": 0.9761904761904762,
+        "recall": 0.9761904761904762,
+        "f1-score": 0.9761904761904762,
+        "support": 42.0
+      },
+      "benign": {
+        "precision": 0.9861111111111112,
+        "recall": 0.9861111111111112,
+        "f1-score": 0.9861111111111112,
+        "support": 72.0
+      },
+      "accuracy": 0.9824561403508771,
+      "macro avg": {
+        "precision": 0.9811507936507937,
+        "recall": 0.9811507936507937,
+        "f1-score": 0.9811507936507937,
+        "support": 114.0
+      },
+      "weighted avg": {
+        "precision": 0.9824561403508771,
+        "recall": 0.9824561403508771,
+        "f1-score": 0.9824561403508771,
+        "support": 114.0
+      }
+    }
+  },
+  {
+    "model": "MLP-Regularized",
+    "family": "torch",
+    "config": {
+      "name": "MLP-Regularized",
+      "hidden_dim": 64,
+      "dropout": 0.2,
+      "lr": 0.01,
+      "weight_decay": 0.0001,
+      "epochs": 25
+    },
+    "val_acc": 0.989011,
+    "test_acc": 0.964912,
+    "confusion_matrix": [
+      [
+        40,
+        2
+      ],
+      [
+        2,
+        70
+      ]
+    ],
+    "classification_report": {
+      "malignant": {
+        "precision": 0.9523809523809523,
+        "recall": 0.9523809523809523,
+        "f1-score": 0.9523809523809523,
+        "support": 42.0
+      },
+      "benign": {
+        "precision": 0.9722222222222222,
+        "recall": 0.9722222222222222,
+        "f1-score": 0.9722222222222222,
+        "support": 72.0
+      },
+      "accuracy": 0.9649122807017544,
+      "macro avg": {
+        "precision": 0.9623015873015872,
+        "recall": 0.9623015873015872,
+        "f1-score": 0.9623015873015872,
+        "support": 114.0
+      },
+      "weighted avg": {
+        "precision": 0.9649122807017544,
+        "recall": 0.9649122807017544,
+        "f1-score": 0.9649122807017544,
+        "support": 114.0
+      }
+    }
+  },
+  {
+    "model": "MLP-Small",
+    "family": "torch",
+    "config": {
+      "name": "MLP-Small",
+      "hidden_dim": 16,
+      "dropout": 0.0,
+      "lr": 0.01,
+      "weight_decay": 0.0,
+      "epochs": 20
+    },
+    "val_acc": 0.978022,
+    "test_acc": 0.95614,
+    "confusion_matrix": [
+      [
+        39,
+        3
+      ],
+      [
+        2,
+        70
+      ]
+    ],
+    "classification_report": {
+      "malignant": {
+        "precision": 0.9512195121951219,
+        "recall": 0.9285714285714286,
+        "f1-score": 0.9397590361445783,
+        "support": 42.0
+      },
+      "benign": {
+        "precision": 0.958904109589041,
+        "recall": 0.9722222222222222,
+        "f1-score": 0.9655172413793104,
+        "support": 72.0
+      },
+      "accuracy": 0.956140350877193,
+      "macro avg": {
+        "precision": 0.9550618108920814,
+        "recall": 0.9503968253968254,
+        "f1-score": 0.9526381387619444,
+        "support": 114.0
+      },
+      "weighted avg": {
+        "precision": 0.9560729421281235,
+        "recall": 0.956140350877193,
+        "f1-score": 0.9560273762928302,
+        "support": 114.0
+      }
+    }
+  }
+]
