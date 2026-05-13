@@ -80,8 +80,9 @@ import torch.nn as nn
 #         print(f"step {step+1}: loss={loss.item():.4f}")
 
 
-# The model below runs without error but always outputs the same predictions
-# regardless of input. Why? What would you fix?
+# The model below can run without a shape error, but it silently treats the
+# batch dimension as the sequence dimension. Find the cause before running it,
+# then explain what you would fix.
 
 class BrokenLSTM(nn.Module):
     def __init__(self):
@@ -95,7 +96,7 @@ class BrokenLSTM(nn.Module):
         return self.fc(output[:, -1, :])
 
 # TODO: explain the bug. Does it crash? Does it silently give wrong results?
-# Hint: check what happens to output shape when batch_first=False.
+# Hint: check what happens to output.shape when batch_first=False.
 
 
 # 1. What is the difference between output and h_n in LSTM?

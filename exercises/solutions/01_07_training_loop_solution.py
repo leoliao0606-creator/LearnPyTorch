@@ -15,7 +15,11 @@ loss = loss_fn(logits, y)
 optimizer.zero_grad()
 loss.backward()
 optimizer.step()
-print("exercise 1 loss =", float(loss))
+print("exercise 1 loss =", loss.item())
+
+print("exercise 2:")
+print("- model.train() enables training behavior such as Dropout randomness.")
+print("- model.eval() switches layers such as Dropout and BatchNorm to inference behavior.")
 
 
 def batch_accuracy(logits, targets):
