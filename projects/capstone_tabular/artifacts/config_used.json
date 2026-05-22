@@ -1,5 +1,6 @@
 {
   "seed": 42,
+  "device": "auto",
   "use_amp": false,
   "train_batch_size": 32,
   "eval_batch_size": 64,
@@ -24,5 +25,9 @@
       "weight_decay": 0.0001,
       "epochs": 25
     }
-  ]
+  ],
+  "runtime": {
+    "device": "cpu",
+    "amp_enabled": false
+  }
 }

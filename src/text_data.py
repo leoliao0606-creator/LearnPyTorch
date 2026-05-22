@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import torch
-from torch.utils.data import TensorDataset
+from torch.utils.data import DataLoader, TensorDataset
+
+from src.utils import make_torch_generator
 
 PAD_TOKEN = "<pad>"
 UNK_TOKEN = "<unk>"
@@ -42,3 +44,29 @@ def build_tensor_text_dataset(texts: list[str], labels: list[int], stoi: dict[st
     features = torch.tensor([encode_text(text, stoi, max_len) for text in texts], dtype=torch.long)
     targets = torch.tensor(labels, dtype=torch.long)
     return TensorDataset(features, targets)
+
+
+def make_text_loaders(
+    train_texts: list[str],
+    train_labels: list[int],
+    val_texts: list[str],
+    val_labels: list[int],
+    test_texts: list[str],
+    test_labels: list[int],
+    stoi: dict[str, int],
+    max_len: int,
+    train_batch_size: int = 32,
+    eval_batch_size: int = 64,
+    seed: int | None = None,
+):
+    """Build TensorDatasets and DataLoaders for fixed-length text classification."""
+    train_ds = build_tensor_text_dataset(train_texts, train_labels, stoi, max_len)
+    val_ds = build_tensor_text_dataset(val_texts, val_labels, stoi, max_len)
+    test_ds = build_tensor_text_dataset(test_texts, test_labels, stoi, max_len)
+    generator = make_torch_generator(seed)
+
+    return {
+        "train": DataLoader(train_ds, batch_size=train_batch_size, shuffle=True, generator=generator),
+        "val": DataLoader(val_ds, batch_size=eval_batch_size, shuffle=False),
+        "test": DataLoader(test_ds, batch_size=eval_batch_size, shuffle=False),
+    }

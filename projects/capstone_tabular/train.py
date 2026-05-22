@@ -19,14 +19,12 @@ if str(REPO_ROOT) not in sys.path:
 from src.models import TabularMLP
 from src.tabular_data import load_breast_cancer_splits, make_tabular_loaders
 from src.training import collect_predictions, run_classification_epoch
-from src.utils import ensure_dir, save_json, set_seed
+from src.utils import ensure_dir, resolve_device, save_json, set_seed
 
 
-def train_mlp(config, split_data, loaders, use_amp: bool = False):
-    set_seed(42)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    amp_enabled = use_amp and device.type == "cuda"
-
+def train_mlp(config, split_data, loaders, seed: int, device: torch.device, use_amp: bool = False):
+    set_seed(seed)
+    amp_enabled = bool(use_amp and device.type == "cuda")
     model = TabularMLP(
         in_dim=split_data["x_train"].shape[1],
         hidden_dim=config["hidden_dim"],
@@ -45,23 +43,15 @@ def train_mlp(config, split_data, loaders, use_amp: bool = False):
     best_val_acc = -1.0
 
     for epoch in range(1, config["epochs"] + 1):
-        model.train()
-        epoch_loss, epoch_correct, epoch_total = 0.0, 0, 0
-        for xb, yb in loaders["train"]:
-            xb, yb = xb.to(device), yb.to(device)
-            optimizer.zero_grad()
-            with torch.autocast(device_type=device.type, enabled=amp_enabled):
-                logits = model(xb)
-                loss = loss_fn(logits, yb)
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
-            epoch_loss += loss.item() * xb.size(0)
-            epoch_correct += (logits.argmax(1) == yb).sum().item()
-            epoch_total += xb.size(0)
-        train_loss = epoch_loss / epoch_total
-        train_acc  = epoch_correct / epoch_total
-
+        train_loss, train_acc = run_classification_epoch(
+            model,
+            loaders["train"],
+            loss_fn,
+            optimizer=optimizer,
+            device=device,
+            amp_enabled=amp_enabled,
+            grad_scaler=scaler,
+        )
         val_loss, val_acc = run_classification_epoch(model, loaders["val"], loss_fn, optimizer=None, device=device)
         history.append(
             {
@@ -86,15 +76,10 @@ def main():
     config_path = project_dir / "config.json"
     config = json.loads(config_path.read_text(encoding="utf-8"))
 
+    device = resolve_device(config.get("device", "auto"))
     use_amp = config.get("use_amp", False)
     set_seed(config["seed"])
     split_data = load_breast_cancer_splits(seed=config["seed"])
-    loaders = make_tabular_loaders(
-        split_data,
-        train_batch_size=config["train_batch_size"],
-        eval_batch_size=config["eval_batch_size"],
-    )
-
     baseline_cfg = config["baseline"]
     baseline_model = LogisticRegression(
         max_iter=baseline_cfg["max_iter"],
@@ -116,15 +101,29 @@ def main():
                 baseline_test_preds,
                 target_names=split_data["target_names"],
                 output_dict=True,
+                zero_division=0,
             ),
         }
     ]
     histories = {}
 
     for experiment in config["experiments"]:
-        model, history = train_mlp(experiment, split_data, loaders, use_amp=use_amp)
-        val_preds, val_targets = collect_predictions(model, loaders["val"])
-        test_preds, test_targets = collect_predictions(model, loaders["test"])
+        loaders = make_tabular_loaders(
+            split_data,
+            train_batch_size=config["train_batch_size"],
+            eval_batch_size=config["eval_batch_size"],
+            seed=config["seed"],
+        )
+        model, history = train_mlp(
+            experiment,
+            split_data,
+            loaders,
+            seed=config["seed"],
+            device=device,
+            use_amp=use_amp,
+        )
+        val_preds, val_targets = collect_predictions(model, loaders["val"], device=device)
+        test_preds, test_targets = collect_predictions(model, loaders["test"], device=device)
         histories[experiment["name"]] = history
         results.append(
             {
@@ -139,13 +138,21 @@ def main():
                     test_preds.numpy(),
                     target_names=split_data["target_names"],
                     output_dict=True,
+                    zero_division=0,
                 ),
             }
         )
 
     sorted_results = sorted(results, key=lambda row: (row["test_acc"], row["val_acc"]), reverse=True)
 
-    save_json(config, artifacts_dir / "config_used.json")
+    config_used = {
+        **config,
+        "runtime": {
+            "device": str(device),
+            "amp_enabled": bool(use_amp and device.type == "cuda"),
+        },
+    }
+    save_json(config_used, artifacts_dir / "config_used.json")
     save_json(histories, artifacts_dir / "histories.json")
     save_json(sorted_results, artifacts_dir / "results.json")
 

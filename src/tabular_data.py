@@ -10,6 +10,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
+from src.utils import make_torch_generator
+
 
 def load_breast_cancer_splits(seed: int = 42, test_size: float = 0.2, val_size: float = 0.2) -> dict[str, Any]:
     """Load and standardize the breast cancer dataset with train/val/test splits."""
@@ -53,7 +55,12 @@ def load_breast_cancer_splits(seed: int = 42, test_size: float = 0.2, val_size: 
     }
 
 
-def make_tabular_loaders(split_data: dict[str, Any], train_batch_size: int = 32, eval_batch_size: int = 64):
+def make_tabular_loaders(
+    split_data: dict[str, Any],
+    train_batch_size: int = 32,
+    eval_batch_size: int = 64,
+    seed: int | None = None,
+):
     """Convert split arrays into PyTorch DataLoaders."""
     train_ds = TensorDataset(
         torch.tensor(split_data["x_train"], dtype=torch.float32),
@@ -68,8 +75,9 @@ def make_tabular_loaders(split_data: dict[str, Any], train_batch_size: int = 32,
         torch.tensor(split_data["y_test"], dtype=torch.long),
     )
 
+    generator = make_torch_generator(seed)
     return {
-        "train": DataLoader(train_ds, batch_size=train_batch_size, shuffle=True),
+        "train": DataLoader(train_ds, batch_size=train_batch_size, shuffle=True, generator=generator),
         "val": DataLoader(val_ds, batch_size=eval_batch_size, shuffle=False),
         "test": DataLoader(test_ds, batch_size=eval_batch_size, shuffle=False),
     }

@@ -2,9 +2,9 @@
 
 from .models import TabularMLP, TextLSTMClassifier
 from .tabular_data import load_breast_cancer_splits, make_tabular_loaders
-from .text_data import build_tensor_text_dataset, build_vocab, encode_text, tokenize_whitespace
+from .text_data import build_tensor_text_dataset, build_vocab, encode_text, make_text_loaders, tokenize_whitespace
 from .training import collect_predictions, run_classification_epoch
-from .utils import ensure_dir, save_json, set_seed
+from .utils import ensure_dir, make_torch_generator, resolve_device, save_json, set_seed
 
 __all__ = [
     "TabularMLP",
@@ -14,10 +14,13 @@ __all__ = [
     "build_tensor_text_dataset",
     "build_vocab",
     "encode_text",
+    "make_text_loaders",
     "tokenize_whitespace",
     "collect_predictions",
     "run_classification_epoch",
     "ensure_dir",
+    "make_torch_generator",
+    "resolve_device",
     "save_json",
     "set_seed",
 ]

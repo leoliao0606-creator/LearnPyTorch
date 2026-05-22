@@ -1,5 +1,7 @@
 {
   "seed": 42,
+  "device": "auto",
+  "use_amp": false,
   "dataset": {
     "n_per_label": 700,
     "test_size": 0.2,
@@ -44,5 +46,9 @@
       "lr": 0.001,
       "epochs": 20
     }
-  ]
+  ],
+  "runtime": {
+    "device": "cpu",
+    "amp_enabled": false
+  }
 }

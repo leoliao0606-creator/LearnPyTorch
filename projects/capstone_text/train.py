@@ -26,9 +26,9 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from src.models import TextLSTMClassifier
-from src.text_data import build_tensor_text_dataset, build_vocab
+from src.text_data import build_vocab, make_text_loaders
 from src.training import collect_predictions, run_classification_epoch
-from src.utils import ensure_dir, save_json, set_seed
+from src.utils import ensure_dir, resolve_device, save_json, set_seed
 
 
 # ---------------------------------------------------------------------------
@@ -73,13 +73,13 @@ def make_dataset(n_per_label: int = 700, seed: int = 42) -> tuple[list[str], lis
 # Training helpers
 # ---------------------------------------------------------------------------
 
-def train_sklearn_baseline(name: str, ngram_range: tuple, max_iter: int, splits: dict) -> dict:
+def train_sklearn_baseline(name: str, ngram_range: tuple, max_iter: int, splits: dict, seed: int) -> dict:
     vec = CountVectorizer(ngram_range=tuple(ngram_range))
     x_train = vec.fit_transform(splits["train_texts"])
     x_val   = vec.transform(splits["val_texts"])
     x_test  = vec.transform(splits["test_texts"])
 
-    clf = LogisticRegression(max_iter=max_iter, random_state=42)
+    clf = LogisticRegression(max_iter=max_iter, random_state=seed)
     clf.fit(x_train, splits["y_train"])
 
     val_preds  = clf.predict(x_val)
@@ -93,29 +93,46 @@ def train_sklearn_baseline(name: str, ngram_range: tuple, max_iter: int, splits:
         "confusion_matrix": confusion_matrix(splits["y_test"], test_preds).tolist(),
         "classification_report": classification_report(
             splits["y_test"], test_preds,
-            target_names=["negative", "positive"], output_dict=True,
+            target_names=["negative", "positive"], output_dict=True, zero_division=0,
         ),
     }
 
 
-def train_lstm(exp_cfg: dict, splits: dict, loaders: dict) -> tuple[nn.Module, list]:
-    set_seed(42)
+def train_lstm(
+    exp_cfg: dict,
+    splits: dict,
+    loaders: dict,
+    seed: int,
+    device: torch.device,
+    use_amp: bool = False,
+) -> tuple[nn.Module, list]:
+    set_seed(seed)
+    amp_enabled = bool(use_amp and device.type == "cuda")
     vocab_size = splits["vocab_size"]
     model = TextLSTMClassifier(
         vocab_size=vocab_size,
         embed_dim=exp_cfg["embed_dim"],
         hidden_dim=exp_cfg["hidden_dim"],
-    )
+    ).to(device)
     loss_fn   = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=exp_cfg["lr"])
+    scaler = torch.amp.GradScaler("cuda", enabled=amp_enabled)
 
     history = []
     best_val_acc = -1.0
     best_state = copy.deepcopy(model.state_dict())
 
     for epoch in range(1, exp_cfg["epochs"] + 1):
-        train_loss, train_acc = run_classification_epoch(model, loaders["train"], loss_fn, optimizer=optimizer)
-        val_loss, val_acc     = run_classification_epoch(model, loaders["val"],   loss_fn, optimizer=None)
+        train_loss, train_acc = run_classification_epoch(
+            model,
+            loaders["train"],
+            loss_fn,
+            optimizer=optimizer,
+            device=device,
+            amp_enabled=amp_enabled,
+            grad_scaler=scaler,
+        )
+        val_loss, val_acc = run_classification_epoch(model, loaders["val"], loss_fn, optimizer=None, device=device)
         history.append({
             "epoch": epoch,
             "train_loss": round(train_loss, 6), "train_acc": round(train_acc, 6),
@@ -138,6 +155,8 @@ def main() -> None:
     artifacts_dir = ensure_dir(project_dir / "artifacts")
     config = json.loads((project_dir / "config.json").read_text(encoding="utf-8"))
 
+    device = resolve_device(config.get("device", "auto"))
+    use_amp = config.get("use_amp", False)
     set_seed(config["seed"])
     ds_cfg = config["dataset"]
     texts, labels = make_dataset(n_per_label=ds_cfg["n_per_label"], seed=config["seed"])
@@ -160,32 +179,45 @@ def main() -> None:
     splits["vocab_size"] = len(vocab)
     max_len = text_cfg["max_len"]
 
-    # PyTorch loaders for LSTM experiments
-    from torch.utils.data import DataLoader
-    train_ds = build_tensor_text_dataset(x_train, list(y_train), stoi, max_len)
-    val_ds   = build_tensor_text_dataset(x_val,   list(y_val),   stoi, max_len)
-    test_ds  = build_tensor_text_dataset(x_test,  list(y_test),  stoi, max_len)
-    loaders = {
-        "train": DataLoader(train_ds, batch_size=config["train_batch_size"], shuffle=True),
-        "val":   DataLoader(val_ds,   batch_size=config["eval_batch_size"],  shuffle=False),
-        "test":  DataLoader(test_ds,  batch_size=config["eval_batch_size"],  shuffle=False),
-    }
-
     results, histories = [], {}
 
     # sklearn baselines
     for bl_cfg in config["baselines"]:
         result = train_sklearn_baseline(
-            bl_cfg["name"], bl_cfg["ngram_range"], bl_cfg["max_iter"], splits,
+            bl_cfg["name"],
+            bl_cfg["ngram_range"],
+            bl_cfg["max_iter"],
+            splits,
+            seed=config["seed"],
         )
         results.append(result)
         print(f"{result['model']}: val={result['val_acc']:.4f}  test={result['test_acc']:.4f}")
 
     # LSTM experiments
     for exp_cfg in config["experiments"]:
-        model, history = train_lstm(exp_cfg, splits, loaders)
-        val_preds, val_targets   = collect_predictions(model, loaders["val"])
-        test_preds, test_targets = collect_predictions(model, loaders["test"])
+        loaders = make_text_loaders(
+            x_train,
+            list(y_train),
+            x_val,
+            list(y_val),
+            x_test,
+            list(y_test),
+            stoi,
+            max_len,
+            train_batch_size=config["train_batch_size"],
+            eval_batch_size=config["eval_batch_size"],
+            seed=config["seed"],
+        )
+        model, history = train_lstm(
+            exp_cfg,
+            splits,
+            loaders,
+            seed=config["seed"],
+            device=device,
+            use_amp=use_amp,
+        )
+        val_preds, val_targets = collect_predictions(model, loaders["val"], device=device)
+        test_preds, test_targets = collect_predictions(model, loaders["test"], device=device)
         histories[exp_cfg["name"]] = history
         result = {
             "model":   exp_cfg["name"],
@@ -196,7 +228,7 @@ def main() -> None:
             "confusion_matrix": confusion_matrix(test_targets.numpy(), test_preds.numpy()).tolist(),
             "classification_report": classification_report(
                 test_targets.numpy(), test_preds.numpy(),
-                target_names=["negative", "positive"], output_dict=True,
+                target_names=["negative", "positive"], output_dict=True, zero_division=0,
             ),
         }
         results.append(result)
@@ -204,7 +236,14 @@ def main() -> None:
 
     sorted_results = sorted(results, key=lambda r: (r["test_acc"], r["val_acc"]), reverse=True)
 
-    save_json(config,         artifacts_dir / "config_used.json")
+    config_used = {
+        **config,
+        "runtime": {
+            "device": str(device),
+            "amp_enabled": bool(use_amp and device.type == "cuda"),
+        },
+    }
+    save_json(config_used,    artifacts_dir / "config_used.json")
     save_json(histories,      artifacts_dir / "histories.json")
     save_json(sorted_results, artifacts_dir / "results.json")
 
